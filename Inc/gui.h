@@ -1,19 +1,10 @@
 #pragma once
+#include "positioning.h"
 #include <memory>
 #include <vector>
 
+
 using EventHandler = void (*)();
-
-struct Position{
-    int32_t x;
-    int32_t y;
-};
-
-struct HoldArea{
-    Position top_left_corn;
-    int32_t width;
-    int32_t height;
-};
 
 class Widget{
 public:
@@ -62,10 +53,6 @@ public:
 class Button : public Widget{
 public:
     void Click() override;    
-};
-
-class Pixel{
-
 };
 
 class Canvas : public Widget{
