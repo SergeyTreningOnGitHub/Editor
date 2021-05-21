@@ -1,53 +1,57 @@
+/*!
+    \file gui.h
+*/
+
+/*!
+    "Модуль графического интерфейса"
+*/
+
 #pragma once
 #include "positioning.h"
 #include <memory>
 #include <vector>
 
-
-using EventHandler = void (*)();
-
-class Widget{
+/// Интерфейс объектов обработчиков событий Click()
+class IClickable{
 public:
-    HoldArea GetHoldArea();
-    void SetPosition(Position pos);
-    Position GetPosition();
+    /// Обработчик события Click()
+    virtual void ClickHandler() = 0;
+};
 
-    void SetWidth(int32_t w);
-    int32_t GetWidth();
 
-    void SetHeight(int32_t h);
-    int32_t GetHight();
+/// Базовый класс графического объекта
+class Widget{
+public:    
 
-    void SetEventHandler(EventHandler ev_h);
+    /// Добавление подписчика на событие Click()
+    void AddClickable(std::unique_ptr<IClickable> clickable);
     
+    /// Событие Click()
     virtual void Click() = 0;
     virtual ~Widget();
 };
 
-using WidgetHandler = int32_t;
 
+/// Базовый класс контейнера графических объектов
 class WidgetContainer : public Widget{
 public:    
-    virtual WidgetHandler AddWidget(std::unique_ptr<Widget> p_w) = 0;
-    virtual void DeleteWidget(WidgetHandler h_w) = 0;
-    virtual Widget& GetWidget(WidgetHandler h_w) = 0;
+    virtual void AddWidget(std::shared_ptr<Widget> p_w) = 0;
+    virtual void DeleteWidget(std::shared_ptr<Widget>) = 0;    
     virtual ~WidgetContainer();    
 };
 
 class Form : public WidgetContainer{
 public:
     void Click() override;    
-    WidgetHandler AddWidget(std::unique_ptr<Widget> p_w) override;
-    void DeleteWidget(WidgetHandler h_w) override;
-    Widget& GetWidget(WidgetHandler h_w) override;
+    void AddWidget(std::shared_ptr<Widget> p_w) override;
+    void DeleteWidget(std::shared_ptr<Widget> p_w) override;    
 };
 
 class Menu : public WidgetContainer{
 public:
     void Click() override;    
-    WidgetHandler AddWidget(std::unique_ptr<Widget> p_w) override;
-    void DeleteWidget(WidgetHandler h_w) override;
-    Widget& GetWidget(WidgetHandler h_w) override;
+    void AddWidget(std::shared_ptr<Widget> p_w) override;
+    void DeleteWidget(std::shared_ptr<Widget> p_w) override;    
 };
 
 class Button : public Widget{
@@ -55,9 +59,13 @@ public:
     void Click() override;    
 };
 
+
+/// Графический объект для отображения рисунков
 class Canvas : public Widget{
 public:
-    void Click() override;    
-    void LoadPixels(const std::vector<Pixel> pixels);
+    void Click() override;
+
+    /// Метод загрузки грфических данных    
+    void LoadPixels(const std::vector<Pixel>& pixels);    
     void Draw();
 };
